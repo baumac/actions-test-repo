@@ -1,0 +1,30 @@
+name: CI
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+
+permissions:
+  # determining CI workflow status (aggregate of all jobs) - read
+  # delete docker oci tarball workflow artifact
+  actions: write
+  contents: read # checking out the source code
+  pull-requests: write # adding labels to PRs
+
+jobs:
+  test-job:
+    name: Wait for HTTP Status
+    if: github.event_name == 'pull_request' && !failure() && !cancelled() && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+      - name: Wait for HTTP Status
+        uses: ./.github/actions/wait-for-http-status/
+        with:
+          url: "http://httpstat.us/503"
