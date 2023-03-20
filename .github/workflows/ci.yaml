@@ -27,4 +27,4 @@ jobs:
       - name: Wait for HTTP Status
         uses: ./.github/actions/wait-for-http-status/
         with:
-          url: "http://httpstat.us/503"
+          url: "https://httpstat.us/503"
