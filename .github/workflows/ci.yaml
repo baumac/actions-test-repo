@@ -23,7 +23,7 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v3
       - name: Create GH Tag
-        uses: baumac/github-tag-action@1.65.1
+        uses: baumac/github-tag-action@1.65.2
         env:
           CUSTOM_TAG: 0.0.999
           VERBOSE: true
