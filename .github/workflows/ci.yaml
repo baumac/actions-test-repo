@@ -9,22 +9,17 @@ on:
   pull_request: {}
 
 permissions:
-  # determining CI workflow status (aggregate of all jobs) - read
-  # delete docker oci tarball workflow artifact
   actions: write
   contents: read # checking out the source code
   pull-requests: write # adding labels to PRs
 
 jobs:
-  release-dryrun:
-    name: Release dryrun
-    runs-on: ubuntu-latest
+  dump-env:
+    runs-on:
+#      group: 'Default' groups are only available for Enterprise accounts, organizations owned by enterprise accounts, and organizations using GitHub Teams
+      labels: ${{ (contains( github.event.pull_request.labels.*.name, 'selfishly-hosted-runner') && format('{0}-laptop', github.actor)) || 'ubuntu-latest' }}
     steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v3
-      - name: Create GH Tag
-        uses: baumac/github-tag-action@1.65.2
+      - name: Dump GitHub context
         env:
-          CUSTOM_TAG: 0.0.999
-          VERBOSE: true
-          DRY_RUN: true
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "GITHUB_CONTEXT"
