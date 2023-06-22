@@ -1,0 +1,47 @@
+name: test-kong-gateway
+description: >
+  An action to test Kong Gateway configurations.
+inputs:
+  gateway-config-path:
+    description: The relative path from the repo root to the file of the gateway configuration.
+    required: true
+  assertions-path:
+    description: The relative path from the repo root to the file containing the test assertions.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Checkout Current Repository
+      uses: actions/checkout@v3
+      with:
+        path: gateway-config-repo
+    - name: Install gateway-config-cleaner deps
+      shell: bash
+      run: cd ./.github/actions/test-kong-gateway/gateway-config-cleaner && yarn
+    - name: Generate cleansed Gateway config
+      shell: bash
+      run: node ./.github/actions/test-kong-gateway/gateway-config-cleaner/config-cleaner.js ${GITHUB_WORKSPACE}/gateway-config-repo/${{ inputs.gateway-config-path }} ${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml
+    - name: Save the gateway config path in an environment variable.
+      shell: bash
+      run: echo KONG_GATEWAY_CONFIG_FILE_PATH=${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml >> $GITHUB_ENV
+    - name: Start the gateway and echo-server and wait for them to come up before continuing
+      shell: bash
+      run: docker-compose -f ./.github/actions/test-kong-gateway/echo-gateway/docker-compose.yaml up -d
+    - name: Sleep 10 seconds since we can't use "docker-compose up --wait" with GH actions
+      shell: bash
+      run: sleep 10
+    - name: Save the assertions path in an environment variable.
+      shell: bash
+      run: echo ASSERTIONS_FILE_PATH=${GITHUB_WORKSPACE}/gateway-config-repo/${{ inputs.assertions-path }} >> $GITHUB_ENV
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - name: Install assertion runner deps
+      shell: bash
+      run: cd ./.github/actions/test-kong-gateway/assertion-runner && yarn
+    - name: Run assertion tests
+      shell: bash
+      run: cd ./.github/actions/test-kong-gateway/assertion-runner && yarn test
+
+

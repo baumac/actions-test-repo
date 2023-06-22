@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  echo-server:
+    image: mendhak/http-https-echo:30
+    environment:
+      - HTTP_PORT=8888
+      - HTTPS_PORT=9999
+    ports:
+      - "8888:8888"
+      - "9999:9999"
+  kong-dbless:
+    depends_on:
+      - echo-server
+    build: .
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: "/opt/kong/kong_gateway_config.yml"
+      KONG_ADMIN_ACCESS_LOG: "/dev/stdout"
+      KONG_ADMIN_ERROR_LOG: "/dev/stderr"
+      KONG_PROXY_LISTEN: "${KONG_PROXY_LISTEN:-0.0.0.0:8000}"
+      KONG_ADMIN_LISTEN: "${KONG_ADMIN_LISTEN:-0.0.0.0:8001}"
+      KONG_PROXY_ACCESS_LOG: "/dev/stdout"
+      KONG_PROXY_ERROR_LOG: "/dev/stderr"
+      KONG_NGINX_PROXY_PROXY_SSL_VERIFY: "off"
+    ports:
+      - "${KONG_INBOUND_PROXY_LISTEN:-0.0.0.0}:8000:8000/tcp"
+      - "${KONG_INBOUND_SSL_PROXY_LISTEN:-0.0.0.0}:8443:8443/tcp"
+      - "127.0.0.1:8001:8001/tcp"
+      - "127.0.0.1:8444:8444/tcp"
+    volumes:
+      - ${KONG_GATEWAY_CONFIG_FILE_PATH}:/opt/kong/kong_gateway_config.yml
+
