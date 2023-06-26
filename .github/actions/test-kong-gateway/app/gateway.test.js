@@ -9,6 +9,7 @@ test.each(assertions)('responds as expected', async (assertion) => {
     const res = await axios({
         method: assertion.method,
         url: new URL(assertion.path, BASE_GATEWAY_URL).toString(),
+        maxRedirects: 0,
         headers: {...assertion.headers},
     })
 
