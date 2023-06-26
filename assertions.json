@@ -3,8 +3,17 @@
     "method": "GET",
     "path": "/foo",
     "expect": {
-      "upstream_host": "foo-bar.local:3001",
+      "upstream_host": "foo.local:3001",
       "upstream_path": "/foo",
+      "upstream_method": "GET"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/bar",
+    "expect": {
+      "upstream_host": "bar.local",
+      "upstream_path": "/bar",
       "upstream_method": "GET"
     }
   }

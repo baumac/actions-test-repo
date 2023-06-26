@@ -1,19 +1,35 @@
 _format_version: '3.0'
 services:
-  - name: foo-bar
-    host: foo-bar.local
+  - name: foo
+    host: foo.local
     port: 3001
     protocol: http
-    path: /
+    path: /foo
     read_timeout: 60000
     connect_timeout: 60000
     write_timeout: 60000
     retries: 5
     routes:
-      - name: foo-bar
+      - name: foo
         paths:
-          - /
+          - /foo
         https_redirect_status_code: 308
         protocols:
           - http
+  - name: bar
+    host: bar.local
+    port: 443
+    protocol: https
+    path: /bar
+    read_timeout: 60000
+    connect_timeout: 60000
+    write_timeout: 60000
+    retries: 5
+    routes:
+      - name: bar
+        paths:
+          - /bar
+        https_redirect_status_code: 308
+        protocols:
+          - https
 plugins: []
