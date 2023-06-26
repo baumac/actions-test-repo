@@ -1,20 +1,22 @@
 [
   {
     "method": "GET",
-    "path": "/foo",
+    "gateway_url": "http://127.0.0.1:8000/foo",
     "expect": {
       "upstream_host": "foo.local:3001",
       "upstream_path": "/foo",
-      "upstream_method": "GET"
+      "upstream_method": "GET",
+      "upstream_protocol": "http"
     }
   },
   {
     "method": "GET",
-    "path": "/bar",
+    "gateway_url": "https://127.0.0.1:8443/bar",
     "expect": {
       "upstream_host": "bar.local",
       "upstream_path": "/bar",
-      "upstream_method": "GET"
+      "upstream_method": "GET",
+      "upstream_protocol": "https"
     }
   }
 ]
