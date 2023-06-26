@@ -1,13 +1,35 @@
 #!/bin/bash
 
-# Short circuit all dns lookups to the echo server ip by finding all hosts in the gateway config and adding a dns entry for them
-grep -o '\s*host:.*' /opt/kong/kong_gateway_config.yml | cut -f2 -d: | while IFS= read -r line; do sudo echo "$(dig +short echo-server) $line">> /etc/hosts; done
+while IFS= read -r gatewayService; do
+    # gatewayService is a yaml snippet representing a single entry
 
-# Route all outbound traffic on port 443 to port 9999 of the echo server. The echo server handles https requests on this port.
-sudo iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination $(dig +short echo-server):9999
+    # Read the service into vars
+    host=$(echo "$gatewayService" | yq '.host')
+    port=$(echo "$gatewayService" | yq '.port')
+    protocol=$(echo "$gatewayService" | yq '.protocol')
 
-# Route all other outbound traffic to port 8888 of the echo server. The echo server handles http requests on this port.
-sudo iptables -t nat -A OUTPUT -p tcp -j DNAT --to-destination $(dig +short echo-server):8888
+    # Short circuit dns lookups and add an iptables rule for each service
+    # This will route requests to the gateway service of the echo-server that matches its protocol.
+    case "$protocol" in
+
+    "http")  echo "Adding hosts entry and iptables rule for host: $host on port: $port with protocol: $protocol"
+             sudo echo "$(dig +short http-echo-server) $host">> /etc/hosts
+             sudo iptables -t nat -A OUTPUT -p tcp --destination $(dig +short http-echo-server) -j DNAT --to-destination $(dig +short http-echo-server):8888
+             ;;
+    "https") echo "Adding hosts entry and iptables rule for host: $host on port: $port with protocol: $protocol"
+             sudo echo "$(dig +short https-echo-server) $host">> /etc/hosts
+             sudo iptables -t nat -A OUTPUT -p tcp --destination $(dig +short https-echo-server) -j DNAT --to-destination $(dig +short https-echo-server):9999
+             ;;
+    *)       echo "Unsupported protocol, no action taken service $gatewayService"
+             ;;
+    esac
+
+#The protocol used to communicate with the upstream. Accepted values are: "grpc", "grpcs", "http", "https", "tcp", "tls", "tls_passthrough", "udp", "ws"
+#, "wss"
+#. Default: "http".
+
+done < <(yq e -o=j -I=0 '.services[]' /opt/kong/kong_gateway_config.yml)
+
 
 # Preserve the initial entrypoint
 /docker-entrypoint.sh "kong" "docker-start"
