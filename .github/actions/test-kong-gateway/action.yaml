@@ -26,7 +26,7 @@ runs:
       run: echo KONG_GATEWAY_CONFIG_FILE_PATH=${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml >> $GITHUB_ENV
     - name: Start the gateway and echo-server and wait for them to come up before continuing
       shell: bash
-      run: docker-compose -f ./.github/actions/test-kong-gateway/echo-gateway/docker-compose.yaml up -d
+      run: docker-compose -f ./.github/actions/test-kong-gateway/docker/docker-compose.yaml up -d
     - name: Sleep 10 seconds since we can't use "docker-compose up --wait" with GH actions
       shell: bash
       run: sleep 10
