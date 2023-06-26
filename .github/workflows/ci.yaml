@@ -25,5 +25,6 @@ jobs:
       - name: Test Kong Gateway
         uses: ./.github/actions/test-kong-gateway/
         with:
-          gateway-config-path: gateway_config.yml
           assertions-path: assertions.json
+          gateway-config-path: gateway_config.yml
+          kong-gateway-image: kong:3.3-ubuntu

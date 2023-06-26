@@ -12,7 +12,10 @@ services:
   kong-dbless:
     depends_on:
       - echo-server
-    build: .
+    build:
+      context: .
+      args:
+        - KONG_GATEWAY_IMAGE=$KONG_GATEWAY_IMAGE
     cap_add:
       - NET_ADMIN
       - NET_RAW

@@ -1,4 +1,5 @@
-FROM kong:3.3-ubuntu
+ARG KONG_GATEWAY_IMAGE
+FROM $KONG_GATEWAY_IMAGE
 
 # Install dependencies
 USER root
