@@ -20,13 +20,10 @@ while IFS= read -r gatewayService; do
              sudo echo "$(dig +short https-echo-server) $host">> /etc/hosts
              sudo iptables -t nat -A OUTPUT -p tcp --destination $(dig +short https-echo-server) -j DNAT --to-destination $(dig +short https-echo-server):9999
              ;;
-    *)       echo "Unsupported protocol, no action taken service $gatewayService"
+    *)       echo "Unsupported protocol: $protocol. no action taken for service $gatewayService"
+              #  Protocols supported by the gateway but not this script are: "grpc", "grpcs", "tcp", "tls", "tls_passthrough", "udp", "ws", "wss"
              ;;
     esac
-
-#The protocol used to communicate with the upstream. Accepted values are: "grpc", "grpcs", "http", "https", "tcp", "tls", "tls_passthrough", "udp", "ws"
-#, "wss"
-#. Default: "http".
 
 done < <(yq e -o=j -I=0 '.services[]' /opt/kong/kong_gateway_config.yml)
 
