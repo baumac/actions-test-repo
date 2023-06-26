@@ -5,13 +5,11 @@ services:
     image: mendhak/http-https-echo:30
     environment:
       - HTTP_PORT=8888
-      - HTTPS_PORT=9999
     ports:
       - "8888:8888"
   https-echo-server:
     image: mendhak/http-https-echo:30
     environment:
-      - HTTP_PORT=8888
       - HTTPS_PORT=9999
     ports:
       - "9999:9999"

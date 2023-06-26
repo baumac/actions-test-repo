@@ -16,6 +16,7 @@ test.each(assertions)('responds as expected', async (assertion) => {
 });
 
 function validate(response, expected) {
+    console.log(response)
     expect(response.headers.host).toEqual(expected.upstream_host)
     expect(response.method).toEqual(expected.upstream_method)
     expect(response.path).toEqual(expected.upstream_path)
