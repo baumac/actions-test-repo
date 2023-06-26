@@ -15,12 +15,12 @@ runs:
       uses: actions/checkout@v3
       with:
         path: gateway-config-repo
-    - name: Install gateway-config-cleaner deps
+    - name: Install Dependencies
       shell: bash
-      run: cd ./.github/actions/test-kong-gateway/gateway-config-cleaner && yarn
+      run: cd ./.github/actions/test-kong-gateway/app && yarn
     - name: Generate cleansed Gateway config
       shell: bash
-      run: node ./.github/actions/test-kong-gateway/gateway-config-cleaner/config-cleaner.js ${GITHUB_WORKSPACE}/gateway-config-repo/${{ inputs.gateway-config-path }} ${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml
+      run: node ./.github/actions/test-kong-gateway/app/config-cleaner.js ${GITHUB_WORKSPACE}/gateway-config-repo/${{ inputs.gateway-config-path }} ${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml
     - name: Save the gateway config path in an environment variable.
       shell: bash
       run: echo KONG_GATEWAY_CONFIG_FILE_PATH=${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml >> $GITHUB_ENV
@@ -37,11 +37,8 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: 18
-    - name: Install assertion runner deps
-      shell: bash
-      run: cd ./.github/actions/test-kong-gateway/assertion-runner && yarn
     - name: Run assertion tests
       shell: bash
-      run: cd ./.github/actions/test-kong-gateway/assertion-runner && yarn test
+      run: cd ./.github/actions/test-kong-gateway/app && yarn test
 
 
