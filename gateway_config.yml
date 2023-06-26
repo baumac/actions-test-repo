@@ -1,0 +1,19 @@
+_format_version: '3.0'
+services:
+  - name: foo-bar
+    host: foo-bar.local
+    port: 3001
+    protocol: http
+    path: /
+    read_timeout: 60000
+    connect_timeout: 60000
+    write_timeout: 60000
+    retries: 5
+    routes:
+      - name: foo-bar
+        paths:
+          - /
+        https_redirect_status_code: 308
+        protocols:
+          - http
+plugins: []
