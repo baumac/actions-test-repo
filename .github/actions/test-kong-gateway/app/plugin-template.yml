@@ -1,0 +1,26 @@
+---
+name: post-function
+config:
+  access:
+    - >
+      local test_ctx = {}
+      test_ctx.matched_service = kong.router.get_service()
+      test_ctx.matched_route = kong.router.get_route()
+      test_ctx.request = {
+          host = kong.request.get_host(),
+          port = kong.request.get_port(),
+          forwarded_scheme = kong.request.get_forwarded_scheme(),
+          forwarded_host = kong.request.get_forwarded_host(),
+          forwarded_path = kong.request.get_forwarded_path(),
+          forwarded_prefix = kong.request.get_forwarded_prefix(),
+          http_version = kong.request.get_http_version(),
+          method = kong.request.get_method(),
+          path = kong.request.get_path(),
+          raw_path = kong.request.get_raw_path(),
+          path_with_query = kong.request.get_path_with_query(),
+          raw_query = kong.request.get_raw_query(),
+      }
+      test_ctx.upstream_uri = test_ctx.matched_service.protocol .. "://" .. test_ctx.matched_service.host .. ":" .. test_ctx.matched_service.port .. ngx.var.upstream_uri
+      
+      kong.response.set_header("content-type", "application/json")
+      return kong.response.exit(226, test_ctx)

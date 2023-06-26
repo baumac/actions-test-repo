@@ -1,5 +1,6 @@
 const yaml = require('js-yaml')
 const fs = require('fs').promises
+const path = require('path')
 
 const pluginsToKeep = [
     'request-transformer',
@@ -28,13 +29,15 @@ async function run() {
     const srcFile = args[0]
     const outFile = args[1]
 
+    const debugPlugin = yaml.load(await fs.readFile(path.join(__dirname, 'plugin-template.yml')))
     let configStr = await fs.readFile(srcFile, 'utf-8')
     configStr = configStr.replace(reHelmtpl, '')
     configStr = replaceEnvTemplateVars(configStr)
     let config = yaml.load(configStr)
     delete config._plugin_configs
-    config.plugins = []
-
+    config.plugins = [
+        debugPlugin
+    ]
     config.services.forEach(s => {
         s.routes && s.routes.forEach(r => {
             r.protocols = ['http']

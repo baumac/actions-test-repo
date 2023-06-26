@@ -24,7 +24,7 @@ runs:
       run: cd ./.github/actions/test-kong-gateway/app && yarn
     - name: Generate cleansed Gateway config
       shell: bash
-      run: node ./.github/actions/test-kong-gateway/app/config-cleaner.js ${GITHUB_WORKSPACE}/gateway-config-repo/${{ inputs.gateway-config-path }} ${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml
+      run: node ./.github/actions/test-kong-gateway/app/config-template-generator.js ${GITHUB_WORKSPACE}/gateway-config-repo/${{ inputs.gateway-config-path }} ${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml
     - name: Save the gateway config path in an environment variable.
       shell: bash
       run: echo KONG_GATEWAY_CONFIG_FILE_PATH=${GITHUB_WORKSPACE}/gateway-config-repo/kong-test.yml >> $GITHUB_ENV
